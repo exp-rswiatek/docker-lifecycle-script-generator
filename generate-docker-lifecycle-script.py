@@ -40,8 +40,8 @@ case "$operation" in
     if [[ -z $current_container  ]]; then
       echo $NO_CONTAINER
     else
-        remove_container
         stop_container
+        remove_container
     fi
     ;;
   status)
