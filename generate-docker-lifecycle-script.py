@@ -15,7 +15,7 @@ CONTAINER_RUNNING="A(n) {container_name} container is running with id: $current_
 
 start_container(){{
   echo -n "Started docker container: "
-  docker run {docker_run_args} {container_name} "$@"
+  docker run {docker_run_args} {container_name} {entry_point_args} "$@"
 }}
 
 stop_container(){{
@@ -40,6 +40,7 @@ case "$operation" in
     if [[ -z $current_container  ]]; then
       echo $NO_CONTAINER
     else
+        remove_container
         stop_container
     fi
     ;;
@@ -52,6 +53,7 @@ case "$operation" in
     ;;
   restart)
     if [[ -z $current_container  ]]; then
+      echo echo $NO_CONTAINER
       start_container
     else
       stop_container
@@ -71,7 +73,8 @@ case "$operation" in
     exit 1
     ;;
 esac
-""".strip()
+
+""".lstrip()
 
 OPERATIONS = [
     "start",
@@ -83,12 +86,14 @@ OPERATIONS = [
 
 if __name__ == "__main__":
     template_data = {
-        "container_name": raw_input("please input the container name: "),
-        "docker_run_args": raw_input("please input any docker run args: "),
+        "container_name": raw_input("please input the container name: ").strip(),
+        "docker_run_args": raw_input("please input any docker run args (optional): ").strip(),
+        "entry_point_args": raw_input("please input any args to send to the docker entry point (optional): ").strip(),
         "operations": "|".join(OPERATIONS).join(["{", "}"])
     }
+    template_data["short_name"] = template_data["container_name"].split("/")[-1]
+    script_name = template_data["short_name"] + ".sh"
     script = TEMPLATE.format(**template_data)
-    script_name = template_data["container_name"].split("/")[-1] + ".sh"
     try:
         f = open(script_name, "w")
         f.write(script)
