@@ -9,6 +9,7 @@ TEMPLATE = """
 current_container=$(docker ps | grep {container_name}  | awk '{{print $1}}')
 operation=$1
 shift
+args=$@
 
 NO_CONTAINER="There is no {container_name} container running"
 CONTAINER_RUNNING="A(n) {container_name} container is running with id: $current_container"
@@ -31,7 +32,7 @@ remove_container(){{
 case "$operation" in
   start)
     if [[ -z $current_container  ]]; then
-      start_container
+      start_container $args
     else
       echo $CONTAINER_RUNNING
     fi
@@ -54,11 +55,11 @@ case "$operation" in
   restart)
     if [[ -z $current_container  ]]; then
       echo echo $NO_CONTAINER
-      start_container
+      start_container $args
     else
       stop_container
       remove_container
-      start_container
+      start_container $args
     fi
     ;;
   logs)
