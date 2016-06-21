@@ -47,7 +47,7 @@ case "$operation" in
     ;;
   status)
     if [[ -z $current_container  ]]; then
-      echo echo $NO_CONTAINER
+      echo $NO_CONTAINER
     else
       echo $CONTAINER_RUNNING
     fi
